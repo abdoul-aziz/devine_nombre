@@ -15,6 +15,7 @@ import NumberContainer from "../components/NumberContainer";
 import Colors from "../constants/colors";
 import BodyText from "../components/BodyText";
 import TileText from "../components/TitleText";
+import MainButton from "../components/MainButton";
 
 const StartGameScreen = (props) => {
   const [entredValue, setEntredValue] = useState("");
@@ -49,11 +50,9 @@ const StartGameScreen = (props) => {
       <Card style={styles.summaryContainer}>
         <BodyText> You selected </BodyText>
         <NumberContainer> {selectedNumber} </NumberContainer>
-        <Button
-          title="START GAME"
-          onPress={() => props.onStartGame(selectedNumber)}
-          color={Colors.primary}
-        />
+        <MainButton onPress={() => props.onStartGame(selectedNumber)}>
+          START GAME
+        </MainButton>
       </Card>
     );
   }
@@ -74,20 +73,12 @@ const StartGameScreen = (props) => {
             value={entredValue}
           />
           <View style={styles.buttonContainer}>
-            <View style={styles.button}>
-              <Button
-                title="Reset"
-                onPress={resetInputHandler}
-                color={Colors.accent}
-              />
-            </View>
-            <View style={styles.button}>
-              <Button
-                title="Confirm"
-                onPress={confirmInputHamdler}
-                color={Colors.primary}
-              />
-            </View>
+            <MainButton onPress={resetInputHandler} style={styles.ButtonReset}>
+              Reset
+            </MainButton>
+            <MainButton onPress={confirmInputHamdler} style={styles.ButtonConf}>
+              Confirm
+            </MainButton>
           </View>
         </Card>
         {confirmedOuput}
@@ -108,21 +99,24 @@ const styles = StyleSheet.create({
     fontFamily: "open-sans-bold",
   },
   inputContainer: {
-    width: 300,
-    maxWidth: "80%",
+    width: 400,
+    maxWidth: "90%",
     alignItems: "center",
   },
   buttonContainer: {
     flexDirection: "row",
     width: "100%",
     justifyContent: "space-between",
-    paddingHorizontal: 15,
+    paddingHorizontal: 25,
   },
-  button: {
-    width: "40%",
+  ButtonReset: {
+    backgroundColor: Colors.accent,
+  },
+  ButtonConf: {
+    backgroundColor: Colors.primary,
   },
   input: {
-    width: 150,
+    width: 15,
     textAlign: "center",
   },
 
