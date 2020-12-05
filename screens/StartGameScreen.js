@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -7,6 +7,9 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Alert,
+  Dimensions,
+  ScrollView,
+  KeyboardAvoidingView,
 } from "react-native";
 
 import Card from "../components/Card";
@@ -21,6 +24,9 @@ const StartGameScreen = (props) => {
   const [entredValue, setEntredValue] = useState("");
   const [confirmed, setConfirmed] = useState(false);
   const [selectedNumber, setSelectedNumber] = useState();
+  const [buttonWidth, setbuttonWidth] = useState(
+    Dimensions.get("window").width / 4
+  );
 
   const numberInputhandler = (inputText) => {
     setEntredValue(inputText.replace(/[^0-9]/g), "");
@@ -28,9 +34,20 @@ const StartGameScreen = (props) => {
 
   const resetInputHandler = () => {
     setEntredValue("");
-
     setConfirmed(false);
   };
+
+  useEffect(() => {
+    const updateLayout = () => {
+      setbuttonWidth(Dimensions.get("window").width / 4);
+    };
+
+    Dimensions.addEventListener("change", updateLayout);
+
+    return () => {
+      Dimensions.addEventListener("change", updateLayout);
+    };
+  });
   const confirmInputHamdler = () => {
     const choseNumber = parseInt(entredValue);
     if (isNaN(choseNumber) || choseNumber <= 0 || choseNumber > 99) {
@@ -58,32 +75,42 @@ const StartGameScreen = (props) => {
   }
 
   return (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        Keyboard.dismiss();
-      }}
-    >
-      <View style={styles.screen}>
-        <TileText style={styles.title}>Start New Game </TileText>
-        <Card style={styles.inputContainer}>
-          <BodyText> Select the number </BodyText>
-          <Input
-            style={styles.input}
-            onChangeText={numberInputhandler}
-            value={entredValue}
-          />
-          <View style={styles.buttonContainer}>
-            <MainButton onPress={resetInputHandler} style={styles.ButtonReset}>
-              Reset
-            </MainButton>
-            <MainButton onPress={confirmInputHamdler} style={styles.ButtonConf}>
-              Confirm
-            </MainButton>
+    <ScrollView>
+      <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={30}>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            Keyboard.dismiss();
+          }}
+        >
+          <View style={styles.screen}>
+            <TileText style={styles.title}>Start New Game </TileText>
+            <Card style={styles.inputContainer}>
+              <BodyText> Select the number </BodyText>
+              <Input
+                style={styles.input}
+                onChangeText={numberInputhandler}
+                value={entredValue}
+              />
+              <View style={styles.buttonContainer}>
+                <Button
+                  title="Reset"
+                  color={Colors.primary}
+                  onPress={resetInputHandler}
+                  style={buttonWidth}
+                />
+                <Button
+                  title="Confirm"
+                  color={Colors.accent}
+                  onPress={confirmInputHamdler}
+                  style={buttonWidth}
+                />
+              </View>
+            </Card>
+            {confirmedOuput}
           </View>
-        </Card>
-        {confirmedOuput}
-      </View>
-    </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </ScrollView>
   );
 };
 
@@ -99,8 +126,10 @@ const styles = StyleSheet.create({
     fontFamily: "open-sans-bold",
   },
   inputContainer: {
-    width: 400,
-    maxWidth: "90%",
+    width: "100%",
+    // maxWidth: "90%",
+    maxWidth: "95%",
+    minWidth: 300,
     alignItems: "center",
   },
   buttonContainer: {
@@ -109,14 +138,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 25,
   },
-  ButtonReset: {
-    backgroundColor: Colors.accent,
+  button: {
+    width: Dimensions.get("window").width / 3,
   },
-  ButtonConf: {
-    backgroundColor: Colors.primary,
-  },
+
   input: {
-    width: 15,
+    width: 35,
     textAlign: "center",
   },
 
