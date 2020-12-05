@@ -1,5 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  FlatList,
+} from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
 import NumberContainer from "../components/NumberContainer";
@@ -19,17 +26,17 @@ const generaterandomBetween = (min, max, exclude) => {
   }
 };
 
-const renderListItem = (value, roundNumer) => (
-  <View key={value} style={sytles.listItem}>
-    <BodyText> #{roundNumer} </BodyText>
-    <BodyText> {value} </BodyText>
+const renderListItem = (listLength, itemData) => (
+  <View style={styles.listItem}>
+    <BodyText> #{listLength - itemData.index} </BodyText>
+    <BodyText> {itemData.item} </BodyText>
   </View>
 );
 
 const GameScreen = (props) => {
   const initialGuess = generaterandomBetween(1, 100, props.userChoice);
   const [currentGuess, setCurrentGuess] = useState(initialGuess);
-  const [pastGuesses, setpastGuesses] = useState([initialGuess]);
+  const [pastGuesses, setpastGuesses] = useState([initialGuess.toString()]);
 
   const currentLow = useRef(1);
   const currentHigh = useRef(100);
@@ -66,14 +73,17 @@ const GameScreen = (props) => {
     );
     setCurrentGuess(nextNumber);
     // setRounds((curRound) => curRound + 1);
-    setpastGuesses((curPasGuesses) => [nextNumber, ...curPasGuesses]);
+    setpastGuesses((curPasGuesses) => [
+      nextNumber.toString(),
+      ...curPasGuesses,
+    ]);
   };
 
   return (
-    <View style={sytles.screen}>
+    <View style={styles.screen}>
       <Text>Opponent's Guess </Text>
       <NumberContainer>{currentGuess} </NumberContainer>
-      <Card style={sytles.buttonContainer}>
+      <Card style={styles.buttonContainer}>
         <MainButton onPress={nextGuessHandler.bind(this, "lower")}>
           <Ionicons name="md-remove-circle" size={34} color={Colors.accent} />
         </MainButton>
@@ -81,18 +91,24 @@ const GameScreen = (props) => {
           <Ionicons name="md-add-circle" size={34} color={Colors.accent} />
         </MainButton>
       </Card>
-      <View style={sytles.list}>
-        <ScrollView>
+      <View style={styles.listContainer}>
+        {/* <ScrollView>
           {pastGuesses.map((guess, index) =>
             renderListItem(guess, pastGuesses.length - index)
           )}
-        </ScrollView>
+        </ScrollView> */}
+        <FlatList
+          keyExtractor={(item) => item}
+          data={pastGuesses}
+          renderItem={renderListItem.bind(this, pastGuesses.length)}
+          contentContainerStyle={styles.list}
+        />
       </View>
     </View>
   );
 };
 
-const sytles = StyleSheet.create({
+const styles = StyleSheet.create({
   screen: {
     flex: 1,
     padding: 10,
@@ -105,9 +121,14 @@ const sytles = StyleSheet.create({
     width: 400,
     maxWidth: "90%",
   },
-  list: {
+  listContainer: {
     flex: 1,
-    width: "80%",
+    width: "60%",
+  },
+  list: {
+    flexGrow: 1,
+    // width: "80%",
+    justifyContent: "flex-end",
   },
   listItem: {
     padding: 15,
@@ -117,6 +138,8 @@ const sytles = StyleSheet.create({
     borderColor: "#ccc",
     backgroundColor: "white",
     justifyContent: "space-between",
+    flexDirection: "row",
+    width: "100%",
   },
 });
 
